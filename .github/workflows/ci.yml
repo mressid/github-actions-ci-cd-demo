@@ -17,7 +17,20 @@ jobs:
       - run: npm run lint:check
       - run: npm run format:check
       - run: npm test
-      - run: npm run build
+      - name: build
+        run: npm run build
+      - name: Notify Slack (build & test)
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            STATUS="SUCCESS"
+          else
+            STATUS="FAILURE"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"text\":\"Build & Test: ${STATUS} on ${GITHUB_REF_NAME} → ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+          "${{ secrets.DISCORD_WEBHOOK }}"
 
   docker:
     needs: build-and-test
@@ -51,10 +64,22 @@ jobs:
           ignore-unfixed: true
       - run: docker push ${{ env.IMAGE }} --all-tags
 
+      - name: Notify Slack (docker)
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            STATUS="SUCCESS"
+          else
+            STATUS="FAILURE"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"text\":\"Docker Build: ${STATUS} on ${GITHUB_REF_NAME} → ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+          "${{ secrets.DISCORD_WEBHOOK }}"
+    
   notify:
     needs: [build-and-test, docker]
     runs-on: ubuntu-latest
-    # DISCORD_WEBHOOK lives in the "dev" GitHub Environment.
     environment: dev
     if: failure()
     steps:
