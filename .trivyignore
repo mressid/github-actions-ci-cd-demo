@@ -1,0 +1,18 @@
+# Accepted CVEs — triaged, not exploitable in this image. Review periodically.
+#
+# Bundled inside npm itself (build tooling, not part of the running API).
+# Fixed only when the base node:20-alpine image ships a newer npm.
+CVE-2026-23745   # tar (npm-bundled)
+CVE-2026-23950   # tar (npm-bundled)
+CVE-2026-24842   # tar (npm-bundled)
+CVE-2026-26960   # tar (npm-bundled)
+CVE-2026-29786   # tar (npm-bundled)
+CVE-2026-31802   # tar (npm-bundled)
+CVE-2025-64756   # glob (npm-bundled)
+CVE-2026-26996   # minimatch (npm-bundled)
+CVE-2026-27903   # minimatch (npm-bundled)
+CVE-2026-27904   # minimatch (npm-bundled)
+CVE-2024-21538   # cross-spawn (npm-bundled)
+#
+# Alpine base OS — fixed when we bump the base image.
+CVE-2026-45447   # libssl3 / libcrypto3 (base image)
