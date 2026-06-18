@@ -60,5 +60,5 @@ jobs:
     steps:
       - run: |
           curl -fsS -H "Content-Type: application/json" \
-            -d "{\"content\":\"CI failed on \`${GITHUB_REF_NAME}\` — ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+            -d "{\"text\":\"CI failed on \`${GITHUB_REF_NAME}\` — ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
             "${{ secrets.DISCORD_WEBHOOK }}"
