@@ -7,6 +7,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,7 +20,7 @@ jobs:
       - run: npm test
       - name: build
         run: npm run build
-      - name: Notify Slack (build & test)
+      - name: Notify Discord (build & test)
         if: always()
         run: |
           if [[ "${{ job.status }}" == "success" ]]; then
@@ -64,7 +65,7 @@ jobs:
           ignore-unfixed: true
       - run: docker push ${{ env.IMAGE }} --all-tags
 
-      - name: Notify Slack (docker)
+      - name: Notify Discord (docker)
         if: always()
         run: |
           if [[ "${{ job.status }}" == "success" ]]; then
