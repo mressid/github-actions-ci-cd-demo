@@ -22,7 +22,9 @@ jobs:
   docker:
     needs: build-and-test
     runs-on: ubuntu-latest
-    # Only push from main, not on PRs. Set DOCKERHUB_USERNAME / DOCKERHUB_TOKEN repo secrets.
+    # Secrets (DOCKERHUB_USERNAME / DOCKERHUB_TOKEN) live in the "dev" GitHub Environment.
+    environment: dev
+    # Only push from main, not on PRs.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     env:
       IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-application
@@ -41,7 +43,7 @@ jobs:
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
       # Fail the build if the image has known HIGH/CRITICAL CVEs.
-      - uses: aquasecurity/trivy-action@0.24.0
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE }}:${{ github.sha }}
           severity: HIGH,CRITICAL
@@ -52,9 +54,10 @@ jobs:
   notify:
     needs: [build-and-test, docker]
     runs-on: ubuntu-latest
+    # DISCORD_WEBHOOK lives in the "dev" GitHub Environment.
+    environment: dev
     if: failure()
     steps:
-      # Set DISCORD_WEBHOOK repo secret (Server Settings -> Integrations -> Webhooks).
       - run: |
           curl -fsS -H "Content-Type: application/json" \
             -d "{\"content\":\"CI failed on \`${GITHUB_REF_NAME}\` — ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
