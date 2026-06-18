@@ -10,8 +10,6 @@ import { TagsController } from './tags/tags.controller';
 import { TagsService } from './tags/tags.service';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
-import { TagsControllerV2 } from './tags-v2/tags.controller';
-import { TagsServiceV2 } from './tags-v2/tags.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
@@ -21,10 +19,8 @@ import { TagsServiceV2 } from './tags-v2/tags.service';
     CategoriesController,
     TagsController,
     OrdersController,
-    TagsControllerV2,
   ],
   providers: [
-    TagsServiceV2,
     AppService,
     ProductsService,
     CategoriesService,
