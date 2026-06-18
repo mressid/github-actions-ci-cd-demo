@@ -41,7 +41,7 @@ jobs:
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
       # Fail the build if the image has known HIGH/CRITICAL CVEs.
-      - uses: aquasecurity/trivy-action@0.24.0
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE }}:${{ github.sha }}
           severity: HIGH,CRITICAL
