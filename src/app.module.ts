@@ -13,7 +13,6 @@ import { OrdersService } from './orders/orders.service';
 import { TagsControllerV2 } from './tags-v2/tags.controller';
 import { TagsServiceV2 } from './tags-v2/tags.service';
 
-
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
   controllers: [
