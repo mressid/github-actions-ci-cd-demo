@@ -78,8 +78,46 @@ jobs:
           -d "{\"text\":\"Docker Build: ${STATUS} on ${GITHUB_REF_NAME} → ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
           "${{ secrets.DISCORD_WEBHOOK }}"
     
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    # DEPLOY_* and DOCKERHUB_USERNAME live in the "dev" GitHub Environment.
+    environment: dev
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-application
+    steps:
+      # SSH in, pull the exact image we just scanned, swap the running container.
+      # ponytail: single docker run, no compose. Add compose/k8s when you need >1 service.
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: IMAGE,GITHUB_SHA
+          script: |
+            set -e
+            # ponytail: assumes a public image. Private? add a docker login here first.
+            docker pull "$IMAGE:$GITHUB_SHA"
+            docker rm -f ci-cd-application 2>/dev/null || true
+            docker run -d --name ci-cd-application --restart unless-stopped \
+              -p 80:3000 "$IMAGE:$GITHUB_SHA"
+
+      - name: Notify Slack (deploy)
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            STATUS="SUCCESS"
+          else
+            STATUS="FAILURE"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"text\":\"Deploy: ${STATUS} on ${GITHUB_REF_NAME} → ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+          "${{ secrets.DISCORD_WEBHOOK }}"
+
   notify:
-    needs: [build-and-test, docker]
+    needs: [build-and-test, docker, deploy]
     runs-on: ubuntu-latest
     environment: dev
     if: failure()
