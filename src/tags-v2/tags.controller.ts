@@ -12,7 +12,7 @@ import { TagsService } from './tags.service';
 
 @ApiTags('tags-v2')
 @Controller('tags-v2')
-export class TagsController {
+export class TagsControllerV2 {
   constructor(private readonly tags: TagsService) {}
 
   @Get()
