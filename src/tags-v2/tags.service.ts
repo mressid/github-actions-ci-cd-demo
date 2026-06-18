@@ -7,7 +7,7 @@ export interface Tag {
 }
 
 @Injectable()
-export class TagsService extends InMemoryStore<Tag> {
+export class TagsServiceV2 extends InMemoryStore<Tag> {
   constructor() {
     super('Tag', [
       { id: 1, name: 'new' },

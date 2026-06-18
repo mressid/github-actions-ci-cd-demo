@@ -8,12 +8,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { TagsService } from './tags.service';
+import { TagsServiceV2 } from './tags.service';
 
 @ApiTags('tags-v2')
 @Controller('tags-v2')
 export class TagsControllerV2 {
-  constructor(private readonly tags: TagsService) {}
+  constructor(private readonly tags: TagsServiceV2) {}
 
   @Get()
   findAll() {
